@@ -1,0 +1,6 @@
+@PatrickAPI_HostAddress = http://localhost:5137
+
+GET {{PatrickAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
