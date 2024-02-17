@@ -57,5 +57,39 @@ namespace PatrickAPI.Services.CharacterService
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(
+            UpdateCharacterDto updatedCharacter
+        )
+        {
+            var serviceResponse = new ServiceResponse<GetCharacterDto>();
+            try
+            {
+                var character = characters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
+
+                if (character is null)
+                    throw new Exception($"Character with id {updatedCharacter.Id} not found.");
+
+                // _mapper.Map(updatedCharacter, character); & new map defined inside profile
+                // _mapper.Map<Character>(updatedCharacter);
+
+                character.Name = updatedCharacter.Name;
+                character.HitPoints = updatedCharacter.HitPoints;
+                character.Strength = updatedCharacter.Strength;
+                character.Defense = updatedCharacter.Defense;
+                character.Class = updatedCharacter.Class;
+                character.Intelligence = updatedCharacter.Intelligence;
+
+                serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+                serviceResponse.Message = "Your character has been updated successfully!";
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
     }
 }
