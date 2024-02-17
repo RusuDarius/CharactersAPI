@@ -30,7 +30,7 @@ namespace PatrickAPI.Services.CharacterService
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(
+        public Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(
             AddCharacterDto newCharacter
         )
         {
@@ -40,25 +40,25 @@ namespace PatrickAPI.Services.CharacterService
             characters.Add(characterToAdd);
             serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
             serviceResponse.Message = "Successfully added the new character!";
-            return serviceResponse;
+            return Task.FromResult(serviceResponse);
         }
 
-        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
+        public Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
             serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
-            return serviceResponse;
+            return Task.FromResult(serviceResponse);
         }
 
-        public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
+        public Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             var character = characters.FirstOrDefault(c => c.Id == id);
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
-            return serviceResponse;
+            return Task.FromResult(serviceResponse);
         }
 
-        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(
+        public Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(
             UpdateCharacterDto updatedCharacter
         )
         {
@@ -89,7 +89,7 @@ namespace PatrickAPI.Services.CharacterService
                 serviceResponse.Message = ex.Message;
             }
 
-            return serviceResponse;
+            return Task.FromResult(serviceResponse);
         }
     }
 }
