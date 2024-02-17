@@ -1,9 +1,25 @@
+global using PatrickAPI.Models;
+global using PatrickAPI.Services.CharacterService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+
+// Every controller that wants to inject the IcharacterService interface
+// has to use the characterService class.
+// Scoped objects are the same within a request, but different across different requests.
+builder.Services.AddScoped<ICharacterService, CharacterService>();
+
+// Transient objects are always different; a new instance is provided to
+// every controller and every service.
+// builder.Services.AddTransient<ICharacterService, CharacterService>();
+
+//Singleton objects are the same for every object and every request.
+// builder.Services.AddSingleton<ICharacterService, CharacterService>();
 
 var app = builder.Build();
 
@@ -15,30 +31,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
+app.MapControllers();
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
