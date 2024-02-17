@@ -1,5 +1,7 @@
 global using PatrickAPI.Models;
 global using PatrickAPI.Services.CharacterService;
+global using PatrickAPI.Dtos.Character;
+global using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,18 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-
-// Every controller that wants to inject the IcharacterService interface
-// has to use the characterService class.
-// Scoped objects are the same within a request, but different across different requests.
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<ICharacterService, CharacterService>();
-
-// Transient objects are always different; a new instance is provided to
-// every controller and every service.
-// builder.Services.AddTransient<ICharacterService, CharacterService>();
-
-//Singleton objects are the same for every object and every request.
-// builder.Services.AddSingleton<ICharacterService, CharacterService>();
 
 var app = builder.Build();
 

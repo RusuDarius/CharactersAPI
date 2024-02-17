@@ -23,23 +23,39 @@ namespace PatrickAPI.Services.CharacterService
             }
         };
 
-        public async Task<List<Character>> AddCharacter(Character newCharacter)
+        private readonly IMapper _mapper;
+
+        public CharacterService(IMapper mapper)
         {
-            characters.Add(newCharacter);
-            return characters;
+            _mapper = mapper;
         }
 
-        public async Task<List<Character>> GetAllCharacters()
+        public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(
+            AddCharacterDto newCharacter
+        )
         {
-            return characters;
+            var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
+            var characterToAdd = _mapper.Map<Character>(newCharacter);
+            characterToAdd.Id = characters.Max(c => c.Id) + 1;
+            characters.Add(characterToAdd);
+            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            serviceResponse.Message = "Successfully added the new character!";
+            return serviceResponse;
         }
 
-        public async Task<Character> GetCharacterById(int id)
+        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
+            var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
+            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
+        {
+            var serviceResponse = new ServiceResponse<GetCharacterDto>();
             var character = characters.FirstOrDefault(c => c.Id == id);
-            if (character is not null)
-                return character;
-            throw new Exception("Character not found!");
+            serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+            return serviceResponse;
         }
     }
 }
