@@ -30,6 +30,7 @@ namespace PatrickAPI.Services.CharacterService
             _mapper = mapper;
         }
 
+        //* Add a character with POST request
         public Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(
             AddCharacterDto newCharacter
         )
@@ -43,6 +44,7 @@ namespace PatrickAPI.Services.CharacterService
             return Task.FromResult(serviceResponse);
         }
 
+        //* Delete 1 single character by id and return the rest of the characters in a list wit DELETE request
         public Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
@@ -69,6 +71,7 @@ namespace PatrickAPI.Services.CharacterService
             return Task.FromResult(serviceResponse);
         }
 
+        //* Get all existing characters with GET request
         public Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
@@ -76,6 +79,7 @@ namespace PatrickAPI.Services.CharacterService
             return Task.FromResult(serviceResponse);
         }
 
+        //* Get a single character with GET request
         public Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
@@ -84,6 +88,7 @@ namespace PatrickAPI.Services.CharacterService
             return Task.FromResult(serviceResponse);
         }
 
+        //* Updating a character with PUT request
         public Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(
             UpdateCharacterDto updatedCharacter
         )
