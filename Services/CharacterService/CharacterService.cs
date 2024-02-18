@@ -43,6 +43,32 @@ namespace PatrickAPI.Services.CharacterService
             return Task.FromResult(serviceResponse);
         }
 
+        public Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
+        {
+            var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
+            try
+            {
+                var character = characters.FirstOrDefault(c => c.Id == id);
+
+                if (character is null)
+                    throw new Exception($"Character with id {id} not found.");
+
+                characters.Remove(character);
+
+                serviceResponse.Data = characters
+                    .Select(c => _mapper.Map<GetCharacterDto>(c))
+                    .ToList();
+                serviceResponse.Message = "Your character has been removed successfully!";
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return Task.FromResult(serviceResponse);
+        }
+
         public Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
@@ -70,7 +96,7 @@ namespace PatrickAPI.Services.CharacterService
                 if (character is null)
                     throw new Exception($"Character with id {updatedCharacter.Id} not found.");
 
-                // _mapper.Map(updatedCharacter, character); & new map defined inside profile
+                // _mapper.Map(updatedCharacter, character); & new config
                 // _mapper.Map<Character>(updatedCharacter);
 
                 character.Name = updatedCharacter.Name;

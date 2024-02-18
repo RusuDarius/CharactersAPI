@@ -50,5 +50,16 @@ namespace PatrickAPI.Controllers
                 return NotFound(response);
             return Ok(response);
         }
+
+        [HttpDelete("delete_character_id={id}")]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> DeleteSingleCharacter(
+            int id
+        )
+        {
+            var response = await _characterService.DeleteCharacter(id);
+            if (response.Data is null)
+                return NotFound(response);
+            return Ok(response);
+        }
     }
 }
