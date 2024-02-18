@@ -2,6 +2,7 @@ global using PatrickAPI.Models;
 global using PatrickAPI.Services.CharacterService;
 global using PatrickAPI.Dtos.Character;
 global using AutoMapper;
+global using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
