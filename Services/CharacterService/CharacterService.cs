@@ -24,40 +24,47 @@ namespace PatrickAPI.Services.CharacterService
         };
 
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public CharacterService(IMapper mapper)
+        public CharacterService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
         //* Add a character with POST request
-        public Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(
+        public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(
             AddCharacterDto newCharacter
         )
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
             var characterToAdd = _mapper.Map<Character>(newCharacter);
-            characterToAdd.Id = characters.Max(c => c.Id) + 1;
-            characters.Add(characterToAdd);
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            var DbCharacters = await _context.Characters.ToListAsync();
+
+            characterToAdd.Id = DbCharacters.Max(c => c.Id) + 1;
+            DbCharacters.Add(characterToAdd);
+            serviceResponse.Data = DbCharacters
+                .Select(c => _mapper.Map<GetCharacterDto>(c))
+                .ToList();
             serviceResponse.Message = "Successfully added the new character!";
-            return Task.FromResult(serviceResponse);
+            return (serviceResponse);
         }
 
         //* Delete 1 single character by id and return the rest of the characters in a list wit DELETE request
-        public Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
+        public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
+            var DbCharacters = await _context.Characters.ToListAsync();
             try
             {
-                var character = characters.FirstOrDefault(c => c.Id == id);
+                var character = DbCharacters.FirstOrDefault(c => c.Id == id);
 
                 if (character is null)
                     throw new Exception($"Character with id {id} not found.");
 
-                characters.Remove(character);
+                DbCharacters.Remove(character);
 
-                serviceResponse.Data = characters
+                serviceResponse.Data = DbCharacters
                     .Select(c => _mapper.Map<GetCharacterDto>(c))
                     .ToList();
                 serviceResponse.Message = "Your character has been removed successfully!";
@@ -68,35 +75,40 @@ namespace PatrickAPI.Services.CharacterService
                 serviceResponse.Message = ex.Message;
             }
 
-            return Task.FromResult(serviceResponse);
+            return (serviceResponse);
         }
 
         //* Get all existing characters with GET request
-        public Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
+        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
-            return Task.FromResult(serviceResponse);
+            var DbCharacters = await _context.Characters.ToListAsync();
+            serviceResponse.Data = DbCharacters
+                .Select(c => _mapper.Map<GetCharacterDto>(c))
+                .ToList();
+            return (serviceResponse);
         }
 
         //* Get a single character with GET request
-        public Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
+        public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-            var character = characters.FirstOrDefault(c => c.Id == id);
+            var DbCharacters = await _context.Characters.ToListAsync();
+            var character = DbCharacters.FirstOrDefault(c => c.Id == id);
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
-            return Task.FromResult(serviceResponse);
+            return (serviceResponse);
         }
 
         //* Updating a character with PUT request
-        public Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(
+        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(
             UpdateCharacterDto updatedCharacter
         )
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
+            var DbCharacters = await _context.Characters.ToListAsync();
             try
             {
-                var character = characters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
+                var character = DbCharacters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
 
                 if (character is null)
                     throw new Exception($"Character with id {updatedCharacter.Id} not found.");
@@ -120,7 +132,7 @@ namespace PatrickAPI.Services.CharacterService
                 serviceResponse.Message = ex.Message;
             }
 
-            return Task.FromResult(serviceResponse);
+            return (serviceResponse);
         }
     }
 }
