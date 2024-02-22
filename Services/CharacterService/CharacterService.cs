@@ -35,12 +35,12 @@ namespace PatrickAPI.Services.CharacterService
 
         private readonly IMapper _mapper;
 
-        // private readonly DataContext _context;
+        private readonly DataContext _context;
 
-        public CharacterService(IMapper mapper)
+        public CharacterService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
-            // _context = context;
+            _context = context;
         }
 
         //* Add a character with POST request
@@ -50,11 +50,13 @@ namespace PatrickAPI.Services.CharacterService
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
             var characterToAdd = _mapper.Map<Character>(newCharacter);
-            // var DbCharacters = await _context.Characters.ToListAsync();
+            var DbCharacters = await _context.Characters.ToListAsync();
 
-            characterToAdd.Id = characters.Max(c => c.Id) + 1;
-            characters.Add(characterToAdd);
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            characterToAdd.Id = DbCharacters.Max(c => c.Id) + 1;
+            DbCharacters.Add(characterToAdd);
+            serviceResponse.Data = DbCharacters
+                .Select(c => _mapper.Map<GetCharacterDto>(c))
+                .ToList();
             serviceResponse.Message = "Successfully added the new character!";
             return (serviceResponse);
         }
@@ -63,17 +65,17 @@ namespace PatrickAPI.Services.CharacterService
         public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            // var characters = await _context.Characters.ToListAsync();
+            var DbCharacters = await _context.Characters.ToListAsync();
             try
             {
-                var character = characters.FirstOrDefault(c => c.Id == id);
+                var character = DbCharacters.FirstOrDefault(c => c.Id == id);
 
                 if (character is null)
                     throw new Exception($"Character with id {id} not found.");
 
-                characters.Remove(character);
+                DbCharacters.Remove(character);
 
-                serviceResponse.Data = characters
+                serviceResponse.Data = DbCharacters
                     .Select(c => _mapper.Map<GetCharacterDto>(c))
                     .ToList();
                 serviceResponse.Message = "Your character has been removed successfully!";
@@ -91,8 +93,10 @@ namespace PatrickAPI.Services.CharacterService
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            // var characters = await _context.Characters.ToListAsync();
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            var DbCharacters = await _context.Characters.ToListAsync();
+            serviceResponse.Data = DbCharacters
+                .Select(c => _mapper.Map<GetCharacterDto>(c))
+                .ToList();
             return (serviceResponse);
         }
 
@@ -100,8 +104,8 @@ namespace PatrickAPI.Services.CharacterService
         public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-            // var characters = await _context.Characters.ToListAsync();
-            var character = characters.FirstOrDefault(c => c.Id == id);
+            var DbCharacters = await _context.Characters.ToListAsync();
+            var character = DbCharacters.FirstOrDefault(c => c.Id == id);
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             return (serviceResponse);
         }
@@ -112,10 +116,10 @@ namespace PatrickAPI.Services.CharacterService
         )
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-            // var characters = await _context.Characters.ToListAsync();
+            var DbCharacters = await _context.Characters.ToListAsync();
             try
             {
-                var character = characters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
+                var character = DbCharacters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
 
                 if (character is null)
                     throw new Exception($"Character with id {updatedCharacter.Id} not found.");
