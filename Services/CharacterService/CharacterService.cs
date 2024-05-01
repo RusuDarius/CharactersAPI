@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace PatrickAPI.Services.CharacterService
 {
     public class CharacterService : ICharacterService
     {
-        private static List<Character> characters = new List<Character>
+        private static readonly List<Character> characters = new List<Character>
         {
             new Character(),
             new Character { Name = "Bilbo", Id = 1 },
